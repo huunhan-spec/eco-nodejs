@@ -1,7 +1,14 @@
 "use strict";
 const keytokenModel = require("../models/keytoken.model");
+
+const { Types } = require("mongoose");
 class KeyTokenService {
-  static createKeyToken = async ({ userId, publicKey, privateKey }) => {
+  static createKeyToken = async ({
+    userId,
+    publicKey,
+    privateKey,
+    refreshToken,
+  }) => {
     try {
       // level 0
       ///publicKey sinh ra bởi thuật toán bất đối xứng => type Buffer => need convert to String
@@ -35,6 +42,23 @@ class KeyTokenService {
     } catch (error) {
       return error;
     }
+  };
+  static findUserId = async (userId) => {
+    return await keytokenModel.findOne({ user: Types.ObjectId(userId) });
+  };
+  static removeKeyById = async (id) => {
+    return await keytokenModel.remove(id);
+  };
+  static findByRefreshTokenUsed = async (refreshToken) => {
+    return await keytokenModel.findOne({ refreshTokensUsed: refreshToken });
+  };
+  static findByRefreshToken = async (refreshToken) => {
+    return await keytokenModel.findOne({ refreshToken });
+  };
+  static deleteKeyById = async (userId) => {
+    return await keytokenModel.deleteOne({
+      user: Types.ObjectId(userId),
+    });
   };
 }
 module.exports = KeyTokenService;
